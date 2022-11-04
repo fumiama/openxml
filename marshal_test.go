@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/go-playground/assert/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 type ppr struct {
@@ -51,6 +51,21 @@ func (*pprm) String() string {
 }
 
 func TestMarshal(t *testing.T) {
+	org := []byte(`<w:r><w:rPr><w:rFonts w:ascii="华文黑体" w:eastAsia="华文黑体" w:hAnsi="华文黑体" w:cs="华文黑体" w:hint="eastAsia"/><w:sz w:val="36"/><w:szCs w:val="44"/></w:rPr><w:t>Test文本원본</w:t></w:r>`)
+	m := ppr{}
+	err := xml.Unmarshal(org, &m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(m)
+	data, err := Marshal(&m, (*pprm)(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, string(org), string(data))
+}
+
+func TestMarshalIndent(t *testing.T) {
 	org := []byte(`<w:r>
 	<w:rPr>
 		<w:rFonts w:ascii="华文黑体" w:eastAsia="华文黑体" w:hAnsi="华文黑体" w:cs="华文黑体" w:hint="eastAsia"/>
